@@ -4,20 +4,18 @@
 //
 //  Created by Hakan Aykut on 9.10.2024.
 //
-
-import SwiftUI
+import Foundation
 import Combine
 
 class GameViewModel: ObservableObject {
     @Published var gameModel = GameModel()
+    @Published var kennyArray: [Bool] = Array(repeating: false, count: 9)
     @Published var isGameOver = false
-    @Published var kennyArray: [Bool] = [Bool](repeating: false, count: 9)
-    var gameSpeed: Double
+    var gameSpeed: Double  // Yeni parametre
+    var timer: Timer?
+    var hideTimer: Timer?
 
-    var timer = Timer()
-    var hideTimer = Timer()
-
-    init(gameSpeed: Double = 1.0) {
+    init(gameSpeed: Double) {  // gameSpeed'i alan init fonksiyonu
         self.gameSpeed = gameSpeed
     }
 
@@ -25,31 +23,28 @@ class GameViewModel: ObservableObject {
         gameModel.score = 0
         gameModel.timeRemaining = 20
         isGameOver = false
-        
+
+        // Geri sayım
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            self.updateTime()
+            if self.gameModel.timeRemaining > 0 {
+                self.gameModel.timeRemaining -= 1
+            } else {
+                self.endGame()
+            }
         }
-        
+
+        // Sembollerin kaybolup görünmesi
         hideTimer = Timer.scheduledTimer(withTimeInterval: gameSpeed, repeats: true) { _ in
-            self.hideKenny()
-            print(self.gameSpeed)  // Hız kontrolü için log
+            self.hideAndShowKenny()
         }
     }
 
-    func hideKenny() {
-        for i in kennyArray.indices {
+    func hideAndShowKenny() {
+        for i in 0..<kennyArray.count {
             kennyArray[i] = false
         }
         let randomIndex = Int.random(in: 0..<kennyArray.count)
         kennyArray[randomIndex] = true
-    }
-
-    func updateTime() {
-        if gameModel.timeRemaining > 0 {
-            gameModel.timeRemaining -= 1
-        } else {
-            endGame()
-        }
     }
 
     func increaseScore() {
@@ -57,12 +52,8 @@ class GameViewModel: ObservableObject {
     }
 
     func endGame() {
-        timer.invalidate()
-        hideTimer.invalidate()
-        if gameModel.score > gameModel.highScore {
-            gameModel.highScore = gameModel.score
-            UserDefaults.standard.set(gameModel.highScore, forKey: "highscore")
-        }
+        timer?.invalidate()
+        hideTimer?.invalidate()
         isGameOver = true
     }
 }

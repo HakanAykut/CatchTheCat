@@ -19,6 +19,7 @@ struct OpenView: View {
                     .fontWeight(.bold)
                     .padding()
 
+                // Mod Seçimi Butonu
                 NavigationLink(destination: GameView(viewModel: GameViewModel(gameSpeed: gameSpeed))) {
                     Text("Start Game")
                         .font(.title2)
@@ -29,6 +30,7 @@ struct OpenView: View {
                 }
                 .padding(.bottom)
 
+                // Zorluk Seviyesini Seçmek için Buton
                 Button("Select Difficulty") {
                     showLevelView = true
                 }
@@ -44,6 +46,7 @@ struct OpenView: View {
         }
     }
 }
+
 #Preview {
     OpenView()
 }

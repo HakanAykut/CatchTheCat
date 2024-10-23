@@ -11,4 +11,7 @@ struct GameModel {
     var score: Int = 0
     var highScore: Int = UserDefaults.standard.integer(forKey: "highscore")
     var timeRemaining: Int = 20
+    
 }
+
+
